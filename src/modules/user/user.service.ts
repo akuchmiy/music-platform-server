@@ -19,13 +19,12 @@ export class UserService {
     return this.userRepository.findOne({ where: { [by]: value } })
   }
 
-  async createOne(user: CreateUserDto): Promise<Partial<User>> {
+  async createOne(user: CreateUserDto): Promise<User> {
     try {
       const newUser = await this.userRepository.create(user)
       await this.userRepository.save(newUser)
 
-      const { password, ...rest } = newUser
-      return rest
+      return newUser
     } catch (e) {
       throw new BadRequestException({ message: 'This email is already in use' })
     }

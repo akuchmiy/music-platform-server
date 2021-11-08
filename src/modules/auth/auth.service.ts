@@ -12,25 +12,25 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async validateUser(email: string, password: string): Promise<Partial<User>> {
+  async validateUser(email: string, password: string): Promise<User> {
     const user = await this.userService.findOne(email, UserSearchBy.email)
+    if (!user) return null
     // if (!user.confirmed) return null
 
     const equals = await bcrypt.compare(password, user.password)
-    if (user && equals) {
-      const { password, ...rest } = user
-      return rest
+    if (equals) {
+      return user
     }
     return null
   }
 
-  async login(user: Partial<User>): Promise<{ accessToken: string }> {
+  async login(user: User): Promise<{ accessToken: string }> {
     const payload = { email: user.email, sub: user.id }
 
     return { accessToken: this.jwtService.sign(payload) }
   }
 
-  async register(user: CreateUserDto): Promise<Partial<User>> {
+  async register(user: CreateUserDto): Promise<User> {
     const encrypted = await bcrypt.hash(user.password, 7)
 
     return this.userService.createOne({

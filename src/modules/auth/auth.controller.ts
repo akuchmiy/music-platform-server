@@ -1,12 +1,12 @@
 import {
-  BadRequestException,
   Body,
+  ClassSerializerInterceptor,
   Controller,
-  Get,
   Post,
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LocalAuthGuard } from './guards/local.auth.guard'
@@ -18,12 +18,13 @@ import { CreateUserDto } from '../../dtos/CreateUserDto'
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
-    @Req() req: { user: Partial<User> },
+    @Req() req: { user: User },
     @Res({ passthrough: true }) res: Response
-  ): Promise<Partial<User>> {
+  ): Promise<User> {
     const user = req.user
     const tokens = await this.authService.login(user)
 
@@ -32,8 +33,9 @@ export class AuthController {
     return user
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post('register')
-  async register(@Body() user: CreateUserDto): Promise<Partial<User>> {
+  async register(@Body() user: CreateUserDto): Promise<User> {
     return await this.authService.register(user)
   }
 }
