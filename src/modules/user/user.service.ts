@@ -4,9 +4,10 @@ import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { CreateUserDto } from '../../dtos/CreateUserDto'
 
-export enum UserSearchBy {
-  id = 'id',
-  email = 'email',
+interface FindUserOptions {
+  id?: string
+  email?: string
+  confirmed?: string
 }
 
 @Injectable()
@@ -15,8 +16,8 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>
   ) {}
 
-  async findOne(value: string, by: UserSearchBy): Promise<User> {
-    return this.userRepository.findOne({ where: { [by]: value } })
+  async findOne(options: FindUserOptions): Promise<User> {
+    return this.userRepository.findOne({ where: options })
   }
 
   async createOne(user: CreateUserDto): Promise<User> {
