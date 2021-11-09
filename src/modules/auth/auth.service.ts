@@ -4,13 +4,20 @@ import { JwtService } from '@nestjs/jwt'
 import { User } from '../../model/user.entity'
 import * as bcrypt from 'bcryptjs'
 import { CreateUserDto } from '../../dtos/CreateUserDto'
+import { configService } from '../../config/configService'
+import { TokenService } from '../token/token.service'
 
 @Injectable()
 export class AuthService {
+  refreshSecret: string
+
   constructor(
     private userService: UserService,
-    private jwtService: JwtService
-  ) {}
+    private jwtService: JwtService,
+    private tokenService: TokenService
+  ) {
+    this.refreshSecret = configService.getValue('JWT_REFRESH_SECRET')
+  }
 
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.userService.findOne({ email })
@@ -25,11 +32,12 @@ export class AuthService {
   }
 
   async login(user: User) {
-    const payload = { email: user.email, sub: user.id }
+    const tokens = this.generateTokens(user)
+    await this.tokenService.saveToken(user, tokens.refreshToken)
 
     return {
-      accessToken: this.jwtService.sign(payload, { expiresIn: '30s' }),
-      refreshToken: this.jwtService.sign(payload, { expiresIn: '10d' }),
+      user: AuthService.makeLoginData(user, tokens.accessToken),
+      refreshToken: tokens.refreshToken,
     }
   }
 
@@ -40,5 +48,24 @@ export class AuthService {
       email: user.email,
       password: encrypted,
     })
+  }
+
+  private static makeLoginData(user: User, accessToken: string) {
+    const { password, ...withoutPassword } = user
+    return {
+      ...withoutPassword,
+      accessToken,
+    }
+  }
+
+  private generateTokens(user: User) {
+    const payload = { email: user.email, sub: user.id }
+    return {
+      accessToken: this.jwtService.sign(payload, { expiresIn: '30m' }),
+      refreshToken: this.jwtService.sign(payload, {
+        expiresIn: '10d',
+        secret: this.refreshSecret,
+      }),
+    }
   }
 }

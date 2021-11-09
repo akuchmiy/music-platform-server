@@ -2,7 +2,6 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
-  Get,
   Post,
   Req,
   Res,
@@ -14,6 +13,8 @@ import { LocalAuthGuard } from './guards/local.auth.guard'
 import { User } from '../../model/user.entity'
 import { Response } from 'express'
 import { CreateUserDto } from '../../dtos/CreateUserDto'
+import { Request } from 'express'
+import { RefreshAuthGuard } from './guards/refresh.auth.guard'
 
 @Controller('auth')
 export class AuthController {
@@ -23,20 +24,39 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
-    @Req() req: { user: User },
+    @Req() req: Request & { user: User },
     @Res({ passthrough: true }) res: Response
-  ): Promise<User> {
+  ) {
     const user = req.user
-    const tokens = await this.authService.login(user)
+    const loginData = await this.authService.login(user)
 
-    res.cookie('token', tokens.accessToken, { httpOnly: true })
+    res.cookie('refresh-token', loginData.refreshToken, {
+      httpOnly: true,
+    })
 
-    return user
+    return loginData.user
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('register')
   async register(@Body() user: CreateUserDto): Promise<User> {
     return await this.authService.register(user)
+  }
+
+  // @UseGuards(JwtRefreshAuthGuard)
+  @UseGuards(RefreshAuthGuard)
+  @Post('refresh')
+  async refreshAccessToken(
+    @Req() req: Request & { user: User },
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const user = req.user
+    const loginData = await this.authService.login(user)
+
+    res.cookie('refresh-token', loginData.refreshToken, {
+      httpOnly: true,
+    })
+
+    return loginData.user
   }
 }
