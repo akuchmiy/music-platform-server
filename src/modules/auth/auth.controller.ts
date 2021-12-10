@@ -2,7 +2,10 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Get,
+  Param,
   Post,
+  Redirect,
   Req,
   Res,
   UseGuards,
@@ -15,12 +18,13 @@ import { Response } from 'express'
 import { CreateUserDto } from '../../dtos/CreateUserDto'
 import { Request } from 'express'
 import { RefreshAuthGuard } from './guards/refresh.auth.guard'
+import { configService } from '../../config/configService'
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
+  //@UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
@@ -40,7 +44,13 @@ export class AuthController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('register')
   async register(@Body() user: CreateUserDto): Promise<User> {
-    return await this.authService.register(user)
+    return this.authService.register(user)
+  }
+
+  @Redirect(configService.getValue('CLIENT_URL'), 302)
+  @Get('activate/:id')
+  async activate(@Param('id') userId) {
+    await this.authService.activate(userId)
   }
 
   // @UseGuards(JwtRefreshAuthGuard)

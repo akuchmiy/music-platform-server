@@ -11,7 +11,7 @@ export class TokenService {
   ) {}
 
   async findOne(userId: string) {
-    return await this.tokenRepository.findOne(userId)
+    return this.tokenRepository.findOne(userId)
   }
 
   async compareToken(user: User, refreshToken: string) {
@@ -27,7 +27,7 @@ export class TokenService {
       user,
       token: refreshToken,
     })
-    return await this.tokenRepository.save(newToken)
+    return this.tokenRepository.save(newToken)
   }
 
   async saveToken(user: User, refreshToken: string) {

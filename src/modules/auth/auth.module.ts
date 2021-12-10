@@ -8,12 +8,14 @@ import { configService } from '../../config/configService'
 import { LocalStrategy } from './strategies/localStrategy'
 import { JwtStrategy } from './strategies/jwtStrategy'
 import { TokenModule } from '../token/token.module'
+import { MailModule } from '../mail/mail.module'
 
 @Module({
   imports: [
     UserModule,
     TokenModule,
     PassportModule,
+    MailModule,
     JwtModule.register({
       secret: configService.getValue('JWT_ACCESS_SECRET'),
     }),

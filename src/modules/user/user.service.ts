@@ -20,6 +20,10 @@ export class UserService {
     return this.userRepository.findOne({ where: options })
   }
 
+  async updateOne(userId: string, user: Partial<User>) {
+    return this.userRepository.update(userId, user)
+  }
+
   async createOne(user: CreateUserDto): Promise<User> {
     try {
       const newUser = this.userRepository.create(user)

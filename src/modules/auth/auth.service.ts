@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { UserService } from '../user/user.service'
 import { JwtService } from '@nestjs/jwt'
 import { User } from '../../model/user.entity'
@@ -6,6 +6,7 @@ import * as bcrypt from 'bcryptjs'
 import { CreateUserDto } from '../../dtos/CreateUserDto'
 import { configService } from '../../config/configService'
 import { TokenService } from '../token/token.service'
+import { MailService } from '../mail/mail.service'
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,8 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private mailService: MailService
   ) {
     this.refreshSecret = configService.getValue('JWT_REFRESH_SECRET')
   }
@@ -44,10 +46,26 @@ export class AuthService {
   async register(user: CreateUserDto): Promise<User> {
     const encrypted = await bcrypt.hash(user.password, 7)
 
-    return this.userService.createOne({
+    const userEntity = await this.userService.createOne({
       email: user.email,
       password: encrypted,
     })
+
+    await this.mailService.sendActivationMail(userEntity.email, userEntity.id)
+
+    return userEntity
+  }
+
+  async activate(userId: string) {
+    try {
+      await this.userService.updateOne(userId, {
+        confirmed: true,
+      })
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'Invalid user id',
+      })
+    }
   }
 
   private static makeLoginData(user: User, accessToken: string) {
