@@ -7,6 +7,7 @@ import { TokenModule } from './modules/auth/modules/token/token.module'
 import { MailModule } from './modules/mail/mail.module'
 import { FileModule } from './modules/file/file.module';
 import { TrackModule } from './modules/track/track.module';
+import { BandModule } from './modules/band/band.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TrackModule } from './modules/track/track.module';
     MailModule,
     FileModule,
     TrackModule,
+    BandModule,
   ],
 })
 export class AppModule {}
