@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { Repository } from 'typeorm'
-import { Token } from '../../model/token.entity'
+import { Token } from '../../../../model/token.entity'
 import { InjectRepository } from '@nestjs/typeorm'
-import { User } from '../../model/user.entity'
+import { User } from '../../../../model/user.entity'
 
 @Injectable()
 export class TokenService {

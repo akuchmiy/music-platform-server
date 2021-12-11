@@ -5,7 +5,7 @@ import { User } from '../../model/user.entity'
 import * as bcrypt from 'bcryptjs'
 import { CreateUserDto } from '../../dtos/CreateUserDto'
 import { configService } from '../../config/configService'
-import { TokenService } from '../token/token.service'
+import { TokenService } from './modules/token/token.service'
 import { MailService } from '../mail/mail.service'
 
 @Injectable()

@@ -7,7 +7,7 @@ import { JwtModule } from '@nestjs/jwt'
 import { configService } from '../../config/configService'
 import { LocalStrategy } from './strategies/localStrategy'
 import { JwtStrategy } from './strategies/jwtStrategy'
-import { TokenModule } from '../token/token.module'
+import { TokenModule } from './modules/token/token.module'
 import { MailModule } from '../mail/mail.module'
 
 @Module({

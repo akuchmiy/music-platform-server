@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common'
 import { UserService } from '../../user/user.service'
 import { JwtService } from '@nestjs/jwt'
-import { TokenService } from '../../token/token.service'
+import { TokenService } from '../modules/token/token.service'
 import { configService } from '../../../config/configService'
 
 function extractFromCookie(req, cookie) {
