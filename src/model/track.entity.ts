@@ -1,5 +1,4 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { User } from './user.entity'
 import { Band } from './band.entity'
 import { Album } from './album.entity'
 
@@ -10,9 +9,6 @@ export class Track {
 
   @Column()
   name: string
-
-  @ManyToOne((type) => User, (user) => user.id)
-  uploader: User
 
   @ManyToOne((type) => Band, (band) => band.id)
   band: Band

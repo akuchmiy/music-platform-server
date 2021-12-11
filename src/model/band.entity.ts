@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm'
+import { User } from './user.entity'
 
 @Entity()
 export class Band {
@@ -7,4 +8,10 @@ export class Band {
 
   @Column({ type: 'varchar', length: 100, unique: true })
   name: string
+
+  @Column({ type: 'varchar', length: 300 })
+  description: string
+
+  @ManyToOne((type) => User, (user) => user.id)
+  creator: User
 }
