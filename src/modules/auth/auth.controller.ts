@@ -4,12 +4,14 @@ import {
   Controller,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Redirect,
   Req,
   Res,
   UseGuards,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LocalAuthGuard } from './guards/local.auth.guard'
@@ -19,6 +21,7 @@ import { CreateUserDto } from '../../dtos/CreateUserDto'
 import { Request } from 'express'
 import { RefreshAuthGuard } from './guards/refresh.auth.guard'
 import { configService } from '../../config/configService'
+import { userValidationPipe } from '../../pipes/userValidationPipe'
 
 @Controller('auth')
 export class AuthController {
@@ -42,6 +45,7 @@ export class AuthController {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(userValidationPipe)
   @Post('register')
   async register(@Body() user: CreateUserDto): Promise<User> {
     return this.authService.register(user)
@@ -49,7 +53,7 @@ export class AuthController {
 
   @Redirect(configService.getValue('CLIENT_URL'), 302)
   @Get('activate/:id')
-  async activate(@Param('id') userId) {
+  async activate(@Param('id', ParseUUIDPipe) userId) {
     await this.authService.activate(userId)
   }
 
