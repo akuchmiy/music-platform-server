@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { configService } from './config/configService'
 import { TokenModule } from './modules/auth/modules/token/token.module'
 import { MailModule } from './modules/mail/mail.module'
+import { FileModule } from './modules/file/file.module';
+import { TrackModule } from './modules/track/track.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { MailModule } from './modules/mail/mail.module'
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     TokenModule,
     MailModule,
+    FileModule,
+    TrackModule,
   ],
 })
 export class AppModule {}
