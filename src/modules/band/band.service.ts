@@ -11,6 +11,7 @@ import { Band } from '../../model/band.entity'
 import { Repository } from 'typeorm'
 import { User } from '../../model/user.entity'
 import { UserService } from '../user/user.service'
+import { Album } from '../../model/album.entity'
 
 @Injectable()
 export class BandService {
@@ -36,13 +37,25 @@ export class BandService {
     }
   }
 
-  async getAllUserBands(id: string): Promise<Band[]> {
+  async getAllUserBands(userId: string): Promise<Band[]> {
     try {
-      const user = await this.userService.findOne({ id })
+      const user = await this.userService.findOne({ id: userId })
 
       return this.bandRepository.find({ where: { creator: user } })
     } catch (e) {
       throw new BadRequestException('Invalid user identifier')
+    }
+  }
+
+  async getBandAlbums(bandId: string): Promise<Album[]> {
+    try {
+      const { albums } = await this.bandRepository.findOne({
+        where: { id: bandId },
+        relations: ['albums'],
+      })
+      return albums
+    } catch (e) {
+      throw new BadRequestException('Invalid band identifier')
     }
   }
 }

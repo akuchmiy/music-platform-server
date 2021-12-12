@@ -17,8 +17,8 @@ export class UserController {
     private bandService: BandService
   ) {}
 
-  @Get(':id/bands')
-  getBands(@Param('id') id: string) {
-    return this.bandService.getAllUserBands(id)
+  @Get(':userId/bands')
+  getBands(@Param('userId') userId: string) {
+    return this.bandService.getAllUserBands(userId)
   }
 }

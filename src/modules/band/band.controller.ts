@@ -1,6 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
   Post,
   Req,
   UploadedFile,
@@ -28,5 +31,10 @@ export class BandController {
   ) {
     const user = req.user
     return this.bandService.create(band, image, user)
+  }
+
+  @Get(':bandId/albums')
+  bandAlbums(@Param('bandId', ParseUUIDPipe) bandId: string) {
+    return this.bandService.getBandAlbums(bandId)
   }
 }
