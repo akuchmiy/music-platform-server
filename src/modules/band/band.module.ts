@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { BandController } from './band.controller'
 import { BandService } from './band.service'
 import { FileModule } from '../file/file.module'
@@ -13,9 +13,10 @@ import { UserModule } from '../user/user.module'
     TypeOrmModule.forFeature([Band]),
     MulterModule,
     FileModule,
-    UserModule,
+    forwardRef(() => UserModule),
   ],
   controllers: [BandController],
   providers: [BandService, JwtStrategy],
+  exports: [BandService],
 })
 export class BandModule {}
