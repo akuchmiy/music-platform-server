@@ -8,6 +8,7 @@ import { MailModule } from './modules/mail/mail.module'
 import { FileModule } from './modules/file/file.module';
 import { TrackModule } from './modules/track/track.module';
 import { BandModule } from './modules/band/band.module';
+import { AlbumModule } from './modules/album/album.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { BandModule } from './modules/band/band.module';
     FileModule,
     TrackModule,
     BandModule,
+    AlbumModule,
   ],
 })
 export class AppModule {}
