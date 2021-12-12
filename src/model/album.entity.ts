@@ -17,6 +17,9 @@ export class Album {
   @Column({ type: 'varchar', length: 100 })
   name: string
 
+  @Column({ type: 'varchar' })
+  picture: string
+
   @ManyToOne((type) => Band, (band) => band.id)
   @JoinColumn()
   band: Band

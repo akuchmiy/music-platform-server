@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Post,
   UploadedFiles,
@@ -6,6 +7,7 @@ import {
 } from '@nestjs/common'
 import { TrackService } from './track.service'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
+import { CreateTrackDto } from '../../dtos/CreateTrackDto'
 
 @Controller('tracks')
 export class TrackController {
@@ -19,6 +21,7 @@ export class TrackController {
   )
   @Post()
   loadTrack(
+    @Body() track: CreateTrackDto,
     @UploadedFiles()
     files: {
       image?: Express.Multer.File[]

@@ -16,8 +16,11 @@ export class Track {
   @ManyToOne((type) => Album, (album) => album.id)
   album: Album
 
-  @Column({ type: 'int', default: 0 })
-  duration: number
+  @Column({ type: 'varchar' })
+  picture: string
+
+  @Column({ type: 'varchar' })
+  audio: string
 
   @Column({ type: 'varchar' })
   text: string

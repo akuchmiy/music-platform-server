@@ -19,6 +19,9 @@ export class Band {
   @Column({ type: 'varchar', length: 300 })
   description: string
 
+  @Column({ type: 'varchar' })
+  picture: string
+
   @ManyToOne(() => User, (user) => user.id)
   creator: User
 

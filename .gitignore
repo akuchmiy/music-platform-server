@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# Static
+/src/static
+
 # Env
 .env
 

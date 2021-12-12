@@ -23,9 +23,12 @@ export class BandService {
 
   async create(band: CreateBandDto, image: Express.Multer.File, user: User) {
     try {
+      const extension = this.fileService.isValidExtension(FileType.IMAGE, image)
+
       const newBand = this.bandRepository.create({
         creator: user,
         ...band,
+        picture: extension,
       })
       await this.bandRepository.save(newBand)
 
@@ -33,7 +36,7 @@ export class BandService {
 
       return newBand
     } catch (e) {
-      throw new BadRequestException('Invalid data')
+      throw new BadRequestException(e.message)
     }
   }
 
