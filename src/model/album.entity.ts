@@ -3,9 +3,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Band } from './band.entity'
+import { Track } from './track.entity'
 
 @Entity()
 export class Album {
@@ -18,4 +20,7 @@ export class Album {
   @ManyToOne((type) => Band, (band) => band.id)
   @JoinColumn()
   band: Band
+
+  @OneToMany(() => Track, (track) => track.album)
+  tracks: Track[]
 }
