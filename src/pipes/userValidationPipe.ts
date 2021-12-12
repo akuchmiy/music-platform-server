@@ -5,7 +5,7 @@ import { CreateUserDto } from '../dtos/CreateUserDto'
 export class userValidationPipe implements PipeTransform {
   transform(value: CreateUserDto) {
     const exception = new BadRequestException('Validation failed')
-    if (!value.email || !value.password) throw exception
+    if (!value || !value.email || !value.password) throw exception
 
     const correct = isValidEmail(value.email) && isValidPassword(value.password)
     if (!correct) {

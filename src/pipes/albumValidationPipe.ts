@@ -5,7 +5,7 @@ import { CreateAlbumDto } from '../dtos/CreateAlbumDto'
 export class albumValidationPipe implements PipeTransform {
   transform(album: CreateAlbumDto) {
     const exception = new BadRequestException('Validation failed')
-    if (!album.name || !album.bandId) throw exception
+    if (!album || !album.name || !album.bandId) throw exception
 
     const correct = isUUID(album.bandId)
     if (!correct) {

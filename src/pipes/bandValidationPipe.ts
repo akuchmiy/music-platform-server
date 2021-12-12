@@ -6,7 +6,7 @@ import { constants } from '../config/constants'
 export class bandValidationPipe implements PipeTransform {
   transform(band: CreateBandDto) {
     const exception = new BadRequestException('Validation failed')
-    if (!band.name || !band.description) throw exception
+    if (!band || !band.name || !band.description) throw exception
 
     if (!isValidBand(band)) {
       throw exception
