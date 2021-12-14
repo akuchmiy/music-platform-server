@@ -2,22 +2,32 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { CreateAlbumDto } from '../../dtos/CreateAlbumDto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Album } from '../../model/album.entity'
-import { Repository } from 'typeorm'
-import { Band } from '../../model/band.entity'
+import { FindOneOptions, Repository } from 'typeorm'
 import { FileService, FileType } from '../file/file.service'
+import { BandService } from '../band/band.service'
 
 @Injectable()
 export class AlbumService {
   constructor(
     private fileService: FileService,
-    @InjectRepository(Album) private albumRepository: Repository<Album>,
-    @InjectRepository(Band) private bandRepository: Repository<Band>
+    private bandService: BandService,
+    @InjectRepository(Album) private albumRepository: Repository<Album>
   ) {}
+
+  async findOne(
+    albumId: string,
+    options?: FindOneOptions<Album>
+  ): Promise<Album> {
+    const album = await this.albumRepository.findOne(albumId, options)
+    if (!album) throw new BadRequestException('Invalid album id')
+
+    return album
+  }
 
   async create(album: CreateAlbumDto, image: Express.Multer.File) {
     try {
       const extension = this.fileService.isValidExtension(FileType.IMAGE, image)
-      const band = await this.bandRepository.findOne(album.bandId)
+      const band = await this.bandService.findOne(album.bandId)
 
       const newAlbum = this.albumRepository.create({
         name: album.name,

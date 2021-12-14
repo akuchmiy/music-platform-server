@@ -8,6 +8,7 @@ import { Track } from '../../model/track.entity'
 import { UserModule } from '../user/user.module'
 import { JwtStrategy } from '../auth/strategies/jwtStrategy'
 import { Album } from '../../model/album.entity'
+import { AlbumModule } from '../album/album.module'
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { Album } from '../../model/album.entity'
     MulterModule,
     FileModule,
     UserModule,
+    AlbumModule,
   ],
   providers: [TrackService, JwtStrategy],
   controllers: [TrackController],

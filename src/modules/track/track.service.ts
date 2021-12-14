@@ -4,14 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Track } from '../../model/track.entity'
 import { Repository } from 'typeorm'
 import { CreateTrackDto } from '../../dtos/CreateTrackDto'
-import { Album } from '../../model/album.entity'
+import { AlbumService } from '../album/album.service'
 
 @Injectable()
 export class TrackService {
   constructor(
     private fileService: FileService,
-    @InjectRepository(Track) private trackRepository: Repository<Track>,
-    @InjectRepository(Album) private albumRepository: Repository<Album>
+    private albumService: AlbumService,
+    @InjectRepository(Track) private trackRepository: Repository<Track>
   ) {}
 
   async saveTrack(
@@ -26,9 +26,7 @@ export class TrackService {
       const picExt = this.fileService.isValidExtension(FileType.IMAGE, image)
       const audioExt = this.fileService.isValidExtension(FileType.AUDIO, audio)
 
-      const album = await this.albumRepository.findOne(track.albumId, {
-        relations: ['band'],
-      })
+      const album = await this.albumService.findOne(track.albumId)
 
       const newTrack = this.trackRepository.create({
         ...track,

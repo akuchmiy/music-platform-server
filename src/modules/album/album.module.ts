@@ -7,10 +7,17 @@ import { JwtStrategy } from '../auth/strategies/jwtStrategy'
 import { UserModule } from '../user/user.module'
 import { Band } from '../../model/band.entity'
 import { FileModule } from '../file/file.module'
+import { BandModule } from '../band/band.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Album, Band]), UserModule, FileModule],
+  imports: [
+    TypeOrmModule.forFeature([Album, Band]),
+    UserModule,
+    FileModule,
+    BandModule,
+  ],
   providers: [AlbumService, JwtStrategy],
   controllers: [AlbumController],
+  exports: [AlbumService],
 })
 export class AlbumModule {}

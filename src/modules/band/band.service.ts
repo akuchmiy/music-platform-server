@@ -8,7 +8,7 @@ import { FileService, FileType } from '../file/file.service'
 import { CreateBandDto } from '../../dtos/CreateBandDto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Band } from '../../model/band.entity'
-import { Repository } from 'typeorm'
+import { FindOneOptions, Repository } from 'typeorm'
 import { User } from '../../model/user.entity'
 import { UserService } from '../user/user.service'
 import { Album } from '../../model/album.entity'
@@ -20,6 +20,13 @@ export class BandService {
     @Inject(forwardRef(() => UserService)) private userService: UserService,
     @InjectRepository(Band) private bandRepository: Repository<Band>
   ) {}
+
+  async findOne(bandId: string, options?: FindOneOptions<Band>): Promise<Band> {
+    const band = await this.bandRepository.findOne(bandId, options)
+    if (!band) throw new BadRequestException('Invalid band id')
+
+    return band
+  }
 
   async create(band: CreateBandDto, image: Express.Multer.File, user: User) {
     try {
