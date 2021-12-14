@@ -8,6 +8,7 @@ import {
 import { TrackService } from './track.service'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
 import { CreateTrackDto } from '../../dtos/CreateTrackDto'
+import { trackValidationPipe } from '../../pipes/trackValidationPipe'
 
 @Controller('tracks')
 export class TrackController {
@@ -16,16 +17,18 @@ export class TrackController {
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'image', maxCount: 1 },
-      { name: 'song', maxCount: 1 },
+      { name: 'audio', maxCount: 1 },
     ])
   )
   @Post()
   loadTrack(
-    @Body() track: CreateTrackDto,
+    @Body(trackValidationPipe) track: CreateTrackDto,
     @UploadedFiles()
     files: {
       image?: Express.Multer.File[]
-      song?: Express.Multer.File[]
+      audio?: Express.Multer.File[]
     }
-  ) {}
+  ) {
+    return this.trackService.saveTrack(track, files)
+  }
 }

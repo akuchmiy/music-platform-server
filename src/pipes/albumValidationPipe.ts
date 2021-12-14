@@ -1,5 +1,6 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
 import { CreateAlbumDto } from '../dtos/CreateAlbumDto'
+import { isUUID } from '../tools/isUUID'
 
 @Injectable()
 export class albumValidationPipe implements PipeTransform {
@@ -13,10 +14,4 @@ export class albumValidationPipe implements PipeTransform {
     }
     return album
   }
-}
-
-export function isUUID(str: string) {
-  const pattern =
-    /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i
-  return pattern.test(str)
 }

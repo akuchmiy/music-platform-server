@@ -7,10 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { Track } from '../../model/track.entity'
 import { UserModule } from '../user/user.module'
 import { JwtStrategy } from '../auth/strategies/jwtStrategy'
+import { Album } from '../../model/album.entity'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Track]),
+    TypeOrmModule.forFeature([Track, Album]),
     MulterModule,
     FileModule,
     UserModule,
