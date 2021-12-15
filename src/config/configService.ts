@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import { TypeOrmModuleOptions } from '@nestjs/typeorm'
+import * as path from 'path'
 
 dotenv.config()
 
@@ -30,6 +31,9 @@ export class ConfigService {
   }
 
   public getTypeOrmConfig(): TypeOrmModuleOptions {
+    const migrations = this.isProduction()
+      ? path.join(__dirname, '..', 'migration', '*.js')
+      : path.join(__dirname, '..', 'migration', '*.ts')
     return {
       type: 'postgres',
 
@@ -39,11 +43,11 @@ export class ConfigService {
       password: this.getValue('POSTGRES_PASSWORD'),
       database: this.getValue('POSTGRES_DATABASE'),
 
-      entities: ['**/*.entity{.ts,.js}'],
+      entities: [path.join(__dirname, '..', 'model', '*.entity{.ts,.js}')],
 
       migrationsTableName: 'migration',
 
-      migrations: ['src/migration/*.ts'],
+      migrations: [migrations],
 
       cli: {
         migrationsDir: 'src/migration',
