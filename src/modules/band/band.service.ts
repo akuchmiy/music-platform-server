@@ -11,7 +11,6 @@ import { Band } from '../../model/band.entity'
 import { FindOneOptions, Repository } from 'typeorm'
 import { User } from '../../model/user.entity'
 import { UserService } from '../user/user.service'
-import { Album } from '../../model/album.entity'
 
 @Injectable()
 export class BandService {
@@ -20,6 +19,13 @@ export class BandService {
     @Inject(forwardRef(() => UserService)) private userService: UserService,
     @InjectRepository(Band) private bandRepository: Repository<Band>
   ) {}
+
+  getAll({ take, skip }: { take: string; skip: string }): Promise<Band[]> {
+    return this.bandRepository.find({
+      take: take ? +take : 20,
+      skip: skip ? +skip : 0,
+    })
+  }
 
   async findOne(bandId: string, options?: FindOneOptions<Band>): Promise<Band> {
     const band = await this.bandRepository.findOne(bandId, options)
@@ -54,18 +60,6 @@ export class BandService {
       return this.bandRepository.find({ where: { creator: user } })
     } catch (e) {
       throw new BadRequestException('Invalid user identifier')
-    }
-  }
-
-  async getBandAlbums(bandId: string): Promise<Album[]> {
-    try {
-      const { albums } = await this.bandRepository.findOne({
-        where: { id: bandId },
-        relations: ['albums'],
-      })
-      return albums
-    } catch (e) {
-      throw new BadRequestException('Invalid band identifier')
     }
   }
 }

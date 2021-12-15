@@ -14,6 +14,13 @@ export class TrackService {
     @InjectRepository(Track) private trackRepository: Repository<Track>
   ) {}
 
+  getAll({ take, skip }: { take: string; skip: string }): Promise<Track[]> {
+    return this.trackRepository.find({
+      take: take ? +take : 20,
+      skip: skip ? +skip : 0,
+    })
+  }
+
   async saveTrack(
     track: CreateTrackDto,
     files: {
@@ -45,7 +52,7 @@ export class TrackService {
     }
   }
 
-  getFiles(files: {
+  private getFiles(files: {
     image?: Express.Multer.File[]
     audio?: Express.Multer.File[]
   }) {

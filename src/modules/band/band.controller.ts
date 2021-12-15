@@ -5,6 +5,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -22,6 +23,16 @@ import { User } from '../../model/user.entity'
 export class BandController {
   constructor(private bandService: BandService) {}
 
+  @Get()
+  getAll(@Query() query: { take: string; skip: string }) {
+    return this.bandService.getAll(query)
+  }
+
+  @Get(':bandId')
+  getOne(@Param('bandId', ParseUUIDPipe) bandId: string) {
+    return this.bandService.findOne(bandId, { relations: ['albums'] })
+  }
+
   @UseInterceptors(FileInterceptor('image'))
   @Post()
   createBand(
@@ -31,10 +42,5 @@ export class BandController {
   ) {
     const user = req.user
     return this.bandService.create(band, image, user)
-  }
-
-  @Get(':bandId/albums')
-  bandAlbums(@Param('bandId', ParseUUIDPipe) bandId: string) {
-    return this.bandService.getBandAlbums(bandId)
   }
 }

@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common'
@@ -13,6 +15,11 @@ import { trackValidationPipe } from '../../pipes/trackValidationPipe'
 @Controller('tracks')
 export class TrackController {
   constructor(private trackService: TrackService) {}
+
+  @Get()
+  getAll(@Query() query: { take: string; skip: string }) {
+    return this.trackService.getAll(query)
+  }
 
   @UseInterceptors(
     FileFieldsInterceptor([

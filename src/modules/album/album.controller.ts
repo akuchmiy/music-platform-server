@@ -1,6 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
   Post,
   UploadedFile,
   UseGuards,
@@ -16,6 +19,11 @@ import { FileInterceptor } from '@nestjs/platform-express'
 @UseGuards(JwtAccessAuthGuard)
 export class AlbumController {
   constructor(private albumService: AlbumService) {}
+
+  @Get(':albumId')
+  getOne(@Param('albumId', ParseUUIDPipe) albumId: string) {
+    return this.albumService.findOne(albumId, { relations: ['tracks'] })
+  }
 
   @UseInterceptors(FileInterceptor('image'))
   @Post()
