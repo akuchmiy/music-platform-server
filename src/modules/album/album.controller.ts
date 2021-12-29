@@ -22,7 +22,7 @@ export class AlbumController {
 
   @Get(':albumId')
   getOne(@Param('albumId', ParseUUIDPipe) albumId: string) {
-    return this.albumService.findOne(albumId, { relations: ['tracks'] })
+    return this.albumService.findOne(albumId, { relations: ['tracks', 'band'] })
   }
 
   @UseInterceptors(FileInterceptor('image'))
