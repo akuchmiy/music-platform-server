@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { FileService, FileType } from '../file/file.service'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Track } from '../../model/track.entity'
-import { Repository } from 'typeorm'
+import { FindOneOptions, Repository } from 'typeorm'
 import { CreateTrackDto } from '../../dtos/CreateTrackDto'
 import { AlbumService } from '../album/album.service'
 
@@ -13,6 +13,16 @@ export class TrackService {
     private albumService: AlbumService,
     @InjectRepository(Track) private trackRepository: Repository<Track>
   ) {}
+
+  async findOne(
+    trackId: string,
+    options?: FindOneOptions<Track>
+  ): Promise<Track> {
+    const track = await this.trackRepository.findOne(trackId, options)
+    if (!track) throw new BadRequestException('Invalid band id')
+
+    return track
+  }
 
   getAll({ take, skip }: { take: string; skip: string }): Promise<Track[]> {
     return this.trackRepository.find({

@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseUUIDPipe,
   Post,
   Query,
   UploadedFiles,
@@ -19,6 +21,11 @@ export class TrackController {
   @Get()
   getAll(@Query() query: { take: string; skip: string }) {
     return this.trackService.getAll(query)
+  }
+
+  @Get(':trackId')
+  getOne(@Param('trackId', ParseUUIDPipe) trackId: string) {
+    return this.trackService.findOne(trackId, { relations: ['album'] })
   }
 
   @UseInterceptors(

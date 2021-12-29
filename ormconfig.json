@@ -6,11 +6,11 @@
   "password": "01be5975015b5c1d378f334a0eab91b2",
   "database": "music_db",
   "entities": [
-    "**/*.entity{.ts,.js}"
+    "/home/anton/Documents/projects/web/music-platform/music-platform-server/src/model/*.entity{.ts,.js}"
   ],
   "migrationsTableName": "migration",
   "migrations": [
-    "src/migration/*.ts"
+    "/home/anton/Documents/projects/web/music-platform/music-platform-server/src/migration/*.ts"
   ],
   "cli": {
     "migrationsDir": "src/migration"
