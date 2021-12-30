@@ -7,14 +7,17 @@ import {
   Post,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
 import { TrackService } from './track.service'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
 import { CreateTrackDto } from '../../dtos/CreateTrackDto'
 import { trackValidationPipe } from '../../pipes/trackValidationPipe'
+import { JwtAccessAuthGuard } from '../auth/guards/jwt.auth.guard'
 
 @Controller('tracks')
+@UseGuards(JwtAccessAuthGuard)
 export class TrackController {
   constructor(private trackService: TrackService) {}
 
