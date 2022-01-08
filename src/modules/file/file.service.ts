@@ -1,6 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import * as sharp from 'sharp'
 import * as path from 'path'
 import * as fs from 'fs'
+import { constants } from '../../config/constants'
+import { v4 as uuidv4 } from 'uuid'
 
 export enum FileType {
   AUDIO = 'audio',
@@ -14,15 +17,24 @@ const validExtensions = {
 
 @Injectable()
 export class FileService {
-  writeFile(type: FileType, file: Express.Multer.File, id: string) {
-    const extension = this.getExtension(file)
-    const newName = `${id}.${extension}`
+  async writeFile(type: FileType, file: Express.Multer.File): Promise<string> {
+    const extension = this.isValidExtension(type, file)
+    const newName = `${uuidv4()}.${extension}`
     const dirPath = path.resolve(__dirname, '..', '..', 'static', type)
+    const fullPath = path.resolve(dirPath, newName)
+
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true })
     }
 
-    fs.writeFileSync(path.resolve(dirPath, newName), file.buffer)
+    if (type === FileType.IMAGE) {
+      await FileService.saveCompressedImage(fullPath, file.buffer)
+      return newName
+    }
+
+    fs.writeFileSync(fullPath, file.buffer)
+
+    return newName
   }
 
   getExtension(file: Express.Multer.File): string {
@@ -36,5 +48,15 @@ export class FileService {
     }
 
     return extension
+  }
+
+  private static async saveCompressedImage(fullPath: string, buffer: Buffer) {
+    try {
+      await sharp(buffer)
+        .resize({ width: constants.DEFAULT_IMAGE_WIDTH })
+        .toFile(fullPath)
+    } catch (e) {
+      throw new BadRequestException(`Invalid image ${e.message}`)
+    }
   }
 }

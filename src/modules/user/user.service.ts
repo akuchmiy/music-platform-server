@@ -17,7 +17,10 @@ export class UserService {
   ) {}
 
   async findOne(options: FindUserOptions): Promise<User> {
-    return this.userRepository.findOne({ where: options })
+    const user = await this.userRepository.findOne({ where: options })
+    if (!user) throw new BadRequestException('User does not exist')
+
+    return user
   }
 
   async updateOne(userId: string, user: Partial<User>) {

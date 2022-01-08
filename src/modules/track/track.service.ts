@@ -39,22 +39,22 @@ export class TrackService {
     }
   ) {
     try {
-      const { image, audio } = this.getFiles(files)
-      const picExt = this.fileService.isValidExtension(FileType.IMAGE, image)
-      const audioExt = this.fileService.isValidExtension(FileType.AUDIO, audio)
-
+      const { image, audio } = TrackService.getFiles(files)
       const album = await this.albumService.findOne(track.albumId)
+
+      const [pictureName, audioName] = await Promise.all([
+        this.fileService.writeFile(FileType.IMAGE, image),
+        this.fileService.writeFile(FileType.AUDIO, audio),
+      ])
 
       const newTrack = this.trackRepository.create({
         ...track,
         album,
-        picture: picExt,
-        audio: audioExt,
+        picture: pictureName,
+        audio: audioName,
       })
-      await this.trackRepository.save(newTrack)
 
-      this.fileService.writeFile(FileType.IMAGE, image, newTrack.id)
-      this.fileService.writeFile(FileType.AUDIO, audio, newTrack.id)
+      await this.trackRepository.save(newTrack)
 
       return newTrack
     } catch (e) {
@@ -62,7 +62,7 @@ export class TrackService {
     }
   }
 
-  private getFiles(files: {
+  private static getFiles(files: {
     image?: Express.Multer.File[]
     audio?: Express.Multer.File[]
   }) {

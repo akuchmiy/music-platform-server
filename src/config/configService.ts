@@ -7,9 +7,9 @@ dotenv.config()
 export class ConfigService {
   constructor(private env: { [key: string]: string | undefined }) {}
 
-  public getValue(key: string, throwOnMissing = true): string {
+  public getValue(key: string): string {
     const param = this.env[key]
-    if (!param && throwOnMissing) {
+    if (!param) {
       throw new Error(`Missing config .env parameter - ${key}`)
     }
 
@@ -17,16 +17,16 @@ export class ConfigService {
   }
 
   public ensureValues(keys: string[]) {
-    keys.forEach((key) => this.getValue(key, true))
+    keys.forEach((key) => this.getValue(key))
     return this
   }
 
   public getPort() {
-    return this.getValue('PORT', true)
+    return this.getValue('PORT')
   }
 
   public isProduction() {
-    const mode = this.getValue('MODE', false)
+    const mode = this.getValue('MODE')
     return mode != 'DEV'
   }
 

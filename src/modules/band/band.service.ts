@@ -36,16 +36,18 @@ export class BandService {
 
   async create(band: CreateBandDto, image: Express.Multer.File, user: User) {
     try {
-      const extension = this.fileService.isValidExtension(FileType.IMAGE, image)
+      const pictureName = await this.fileService.writeFile(
+        FileType.IMAGE,
+        image
+      )
 
       const newBand = this.bandRepository.create({
         creator: user,
         ...band,
-        picture: extension,
+        picture: pictureName,
       })
-      await this.bandRepository.save(newBand)
 
-      this.fileService.writeFile(FileType.IMAGE, image, newBand.id)
+      await this.bandRepository.save(newBand)
 
       return newBand
     } catch (e) {
@@ -54,12 +56,8 @@ export class BandService {
   }
 
   async getAllUserBands(userId: string): Promise<Band[]> {
-    try {
-      const user = await this.userService.findOne({ id: userId })
+    const user = await this.userService.findOne({ id: userId })
 
-      return this.bandRepository.find({ where: { creator: user } })
-    } catch (e) {
-      throw new BadRequestException('Invalid user identifier')
-    }
+    return this.bandRepository.find({ where: { creator: user } })
   }
 }

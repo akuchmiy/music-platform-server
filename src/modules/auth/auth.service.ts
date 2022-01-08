@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { UserService } from '../user/user.service'
 import { JwtService } from '@nestjs/jwt'
 import { User } from '../../model/user.entity'
@@ -22,14 +26,19 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.userService.findOne({ email })
-    if (!user || !user.confirmed) return null
+    const exception = new UnauthorizedException({
+      message: 'Your data is incorrect, or email is not confirmed',
+    })
 
-    const equals = await bcrypt.compare(password, user.password)
-    if (equals) {
+    try {
+      const user = await this.userService.findOne({ email })
+      await AuthService.comparePassword(password, user.password)
+      AuthService.isUserConfirmed(user)
+
       return user
+    } catch (e) {
+      throw exception
     }
-    return null
   }
 
   async login(user: User) {
@@ -65,6 +74,15 @@ export class AuthService {
         message: 'Invalid user id',
       })
     }
+  }
+
+  private static async comparePassword(password: string, realPassword: string) {
+    const equals = await bcrypt.compare(password, realPassword)
+    if (!equals) throw new Error('Invalid password')
+  }
+
+  private static isUserConfirmed(user: User) {
+    if (!user.confirmed) throw new Error('User is not confirmed')
   }
 
   private static makeLoginData(user: User, accessToken: string) {

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import { Token } from '../../../../model/token.entity'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -10,16 +10,17 @@ export class TokenService {
     @InjectRepository(Token) private tokenRepository: Repository<Token>
   ) {}
 
-  async findOne(userId: string) {
-    return this.tokenRepository.findOne(userId)
+  async findOne(userId: string): Promise<Token> {
+    const token = await this.tokenRepository.findOne(userId)
+    if (!token) throw new BadRequestException('Token does not exist')
+
+    return token
   }
 
   async compareToken(user: User, refreshToken: string) {
     const token = await this.findOne(user.id)
-    if (token) {
-      return token.token === refreshToken
-    }
-    return false
+
+    if (token.token !== refreshToken) throw new Error('Token comparison failed')
   }
 
   private async createToken(user: User, refreshToken: string) {
@@ -31,18 +32,11 @@ export class TokenService {
   }
 
   async saveToken(user: User, refreshToken: string) {
-    const token = await this.findOne(user.id)
-
     try {
-      if (!token) {
-        await this.createToken(user, refreshToken)
-      } else {
-        await this.tokenRepository.update({ user }, { token: refreshToken })
-      }
+      await this.findOne(user.id)
+      await this.tokenRepository.update({ user }, { token: refreshToken })
     } catch (e) {
-      throw new InternalServerErrorException({
-        message: 'Internal server error',
-      })
+      await this.createToken(user, refreshToken)
     }
   }
 }

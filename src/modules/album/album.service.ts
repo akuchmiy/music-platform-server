@@ -26,17 +26,20 @@ export class AlbumService {
 
   async create(album: CreateAlbumDto, image: Express.Multer.File) {
     try {
-      const extension = this.fileService.isValidExtension(FileType.IMAGE, image)
       const band = await this.bandService.findOne(album.bandId)
+
+      const pictureName = await this.fileService.writeFile(
+        FileType.IMAGE,
+        image
+      )
 
       const newAlbum = this.albumRepository.create({
         name: album.name,
         band,
-        picture: extension,
+        picture: pictureName,
       })
-      await this.albumRepository.save(newAlbum)
 
-      this.fileService.writeFile(FileType.IMAGE, image, newAlbum.id)
+      await this.albumRepository.save(newAlbum)
 
       return newAlbum
     } catch (e) {

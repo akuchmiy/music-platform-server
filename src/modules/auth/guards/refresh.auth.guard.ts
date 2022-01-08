@@ -10,11 +10,11 @@ import { TokenService } from '../modules/token/token.service'
 import { configService } from '../../../config/configService'
 
 function extractFromCookie(req, cookie) {
-  let token = null
   if (req && req.cookies) {
-    token = req.cookies[cookie]
+    return req.cookies[cookie]
+  } else {
+    throw new Error(`No cookie ${cookie}`)
   }
-  return token
 }
 
 const REFRESH_SECRET = configService.getValue('JWT_REFRESH_SECRET')
@@ -34,20 +34,16 @@ export class RefreshAuthGuard implements CanActivate {
       message: 'Invalid credentials',
     })
 
-    const token = extractFromCookie(request, 'refresh-token')
-    let payload
     try {
-      payload = this.jwtService.verify(token, { secret: REFRESH_SECRET })
+      const token = extractFromCookie(request, 'refresh-token')
+      const payload = this.jwtService.verify(token, { secret: REFRESH_SECRET })
+
+      const user = await this.userService.findOne({ id: payload.sub })
+      await this.tokenService.compareToken(user, token)
+      request.user = user
+      return true
     } catch (e) {
       throw exception
     }
-
-    const user = await this.userService.findOne({ id: payload.sub })
-    const valid = await this.tokenService.compareToken(user, token)
-
-    if (!user || !valid) throw exception
-
-    request.user = user
-    return true
   }
 }
