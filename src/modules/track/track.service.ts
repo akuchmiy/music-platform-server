@@ -26,6 +26,7 @@ export class TrackService {
 
   getAll({ take, skip }: { take: string; skip: string }): Promise<Track[]> {
     return this.trackRepository.find({
+      relations: ['album', 'album.band'],
       take: take ? +take : 20,
       skip: skip ? +skip : 0,
     })
